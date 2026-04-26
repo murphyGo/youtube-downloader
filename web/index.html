@@ -49,6 +49,11 @@
     </form>
 
     <script>
+      // Replace the production host with your deployed Fly app URL after `fly deploy`.
+      const PROXY_HOST = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+        ? "http://127.0.0.1:8080"
+        : "https://CHANGE-ME.fly.dev";
+
       const ALLOWED_HOSTS = new Set([
         "youtube.com",
         "www.youtube.com",
@@ -87,6 +92,16 @@
       }
 
       input.addEventListener("input", refresh);
+
+      document.getElementById("form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const value = input.value.trim();
+        if (!isYouTubeUrl(value)) return;
+        const target = `${PROXY_HOST}/download?url=${encodeURIComponent(value)}`;
+        status.textContent = "Downloading… your browser will prompt to save the file.";
+        window.location.href = target;
+      });
+
       refresh();
     </script>
   </body>
