@@ -37,7 +37,7 @@
 
 ### Web UI
 
-- [ ] Single `index.html` with URL input, download button, status text
+- [x] Single `index.html` with URL input, download button, status text
 - [ ] Client-side YouTube URL validation; enable button only when valid
 - [ ] Button links to `<PROXY_HOST>/download?url=<encoded>` (browser handles the file save via `Content-Disposition`)
 - [ ] Configure GH Pages to serve `web/`
