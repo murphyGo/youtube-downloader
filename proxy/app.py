@@ -1,6 +1,7 @@
 import os
 import shutil
 import tempfile
+from urllib.parse import urlparse
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
@@ -10,6 +11,27 @@ from yt_dlp.utils import DownloadError
 
 app = FastAPI(title="youtube-downloader proxy")
 
+ALLOWED_HOSTS = {
+    "youtube.com",
+    "www.youtube.com",
+    "m.youtube.com",
+    "youtu.be",
+    "youtube-nocookie.com",
+    "www.youtube-nocookie.com",
+}
+
+
+def _validate_youtube_url(url: str) -> None:
+    try:
+        parsed = urlparse(url)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail="invalid URL") from e
+    if parsed.scheme not in ("http", "https"):
+        raise HTTPException(status_code=400, detail="URL must be http(s)")
+    host = (parsed.hostname or "").lower()
+    if host not in ALLOWED_HOSTS:
+        raise HTTPException(status_code=400, detail="only YouTube hosts are allowed")
+
 
 @app.get("/healthz")
 def healthz() -> dict[str, str]:
@@ -18,6 +40,7 @@ def healthz() -> dict[str, str]:
 
 @app.get("/download")
 def download(url: str = Query(..., description="YouTube video URL")) -> FileResponse:
+    _validate_youtube_url(url)
     tmpdir = tempfile.mkdtemp(prefix="ytdl-")
     opts = {
         "outtmpl": os.path.join(tmpdir, "%(title)s.%(ext)s"),
