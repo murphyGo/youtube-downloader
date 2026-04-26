@@ -1,0 +1,152 @@
+# Lite Init Skill
+
+Bootstrap a personal project from a rough idea in one shot. Five questions, three files generated.
+
+## Arguments
+
+- `$ARGUMENTS` — (optional) the idea as a sentence. If provided, skip Q1.
+
+## Objective
+
+Generate `BRIEF.md`, `PLAN.md`, `DECISIONS.md`, and a project-specific `CLAUDE.md` from a single round of dialogue. Replace the template's `README.md` with a project README. Leave the two skills (`lite-init`, `lite-dev`) in place. **Do not** create `aidlc-docs/`, `audit.md`, `aidlc-state.md`, or any refinement-log.
+
+## Execution Steps
+
+### Step 1: Detect existing state
+
+Check the project root for `BRIEF.md`:
+
+| State | Action |
+|-------|--------|
+| `BRIEF.md` does not exist | New project — proceed to Step 2 |
+| `BRIEF.md` exists | Refinement run — read it, ask: "Existing BRIEF.md found. Refine it (R), regenerate from scratch (X), or cancel (C)?" |
+
+If R: Step 2 with the existing brief as context. If X: rename existing to `BRIEF.md.bak` and proceed fresh. If C: stop.
+
+### Step 2: One-shot question block
+
+Present **all five questions at once**. The user answers what they can, in any format, and may write `skip` for any.
+
+```
+Let's capture your idea. Answer what you can — skip the rest.
+
+1. **One-liner** — what is this in one sentence?
+2. **Problem & user** — what problem does it solve, and who has it? ("me" is a valid answer)
+3. **MVP features** — 3 things that must work for v1?
+4. **Tech stack** — language / framework / data store? (write "recommend" if unsure)
+5. **Out of scope + success** — what are you explicitly NOT building, and how will you know it's done?
+```
+
+Wait for the user's response. **Do not loop.** One round only.
+
+### Step 3: Fill gaps with defaults
+
+For any skipped question, apply these defaults silently:
+
+| Skipped | Default |
+|---------|---------|
+| One-liner | Synthesize from problem + features |
+| Problem | "Personal need: [first feature]" |
+| Features | If user gave any, use them; else ask one targeted follow-up |
+| Tech stack | Recommend based on the project type (CLI → Python; web API → Go or Node; web app → Next.js; data → Python+SQLite) and note rationale in `DECISIONS.md` |
+| Out of scope | List the obvious omissions (auth, multi-user, deployment) |
+| Success criteria | "v1 ships when MVP features work end-to-end" |
+
+If features are entirely missing AND can't be inferred, ask **one** follow-up: "What are 2-3 things this needs to do?" Otherwise proceed.
+
+### Step 4: Generate the three files
+
+Read the templates from `templates/BRIEF.md`, `templates/PLAN.md`, `templates/DECISIONS.md` (in the project root, copied from this template repo) and fill them in.
+
+**Generation rules:**
+- `BRIEF.md` — keep under 1 page (~50 lines). Prose with bullets. No FR-001 numbering. No NFR sections unless user mentioned perf/security explicitly.
+- `PLAN.md` — flat checklist of 5–15 tasks grouped by phase (Setup / Core / Polish are common, but adapt). Inline build/test commands at the top once tech is decided. No "units," no nested stage headings.
+- `DECISIONS.md` — append one entry for each non-obvious choice made during init (e.g., recommended tech stack, deferred features). Format: `## YYYY-MM-DD: <title>` then 2-4 lines of rationale. Today is `{current date}`.
+
+### Step 5: Generate project CLAUDE.md
+
+**Replace** the template's `CLAUDE.md` with a project-specific one:
+
+```markdown
+# {Project Name}
+
+{One-liner from BRIEF.md}
+
+## Quick reference
+
+| File | Role |
+|------|------|
+| `BRIEF.md` | Problem, MVP scope, tech, out-of-scope, success |
+| `PLAN.md` | Flat checklist — checking items off IS the state |
+| `DECISIONS.md` | ADR log for non-obvious choices |
+
+## Skills
+
+- `/lite-dev` — picks the next unchecked `PLAN.md` item, implements it, checks it off
+- `/lite-init` — re-run to refine `BRIEF.md` if direction changes
+
+## Tech
+
+- {Language / Framework / Data — pulled from BRIEF.md}
+
+## Build / test commands
+
+{Inline from PLAN.md top section, or "TBD" if not yet decided}
+
+## Conventions
+
+- Commit is the approval gate. No other gates.
+- One PLAN.md task per commit when possible.
+- If a non-obvious choice is made during dev, append to `DECISIONS.md`.
+```
+
+### Step 6: Replace template README
+
+**Replace** the template's `README.md` with a minimal project README:
+
+```markdown
+# {Project Name}
+
+{One-liner}
+
+## Status
+
+In development. See `PLAN.md` for progress.
+
+## Run
+
+{Build/test/run commands once they exist, else "TBD"}
+```
+
+### Step 7: Clean up template artifacts
+
+- Delete `templates/` directory (the templates have been consumed).
+- Leave `.claude/skills/lite-init/` and `.claude/skills/lite-dev/` in place.
+- **Do not** touch `.git/` — the user manages that themselves (per the README quick start, they typically `rm -rf .git && git init` before cloning).
+
+### Step 8: Final report
+
+Print a short summary:
+
+```
+✓ BRIEF.md, PLAN.md, DECISIONS.md generated
+✓ CLAUDE.md and README.md replaced for this project
+✓ Templates consumed and removed
+
+Next: run /lite-dev to start on the first PLAN.md task.
+```
+
+**Do not** offer to commit. The user does that.
+
+## Guidelines
+
+- **One round only.** Do not loop on follow-ups. If something critical is missing, ask one targeted question and accept whatever comes back.
+- **Default aggressively.** A reasonable default written in `DECISIONS.md` is better than another round of questions.
+- **No suggestion menus.** Do not present "Here are 8 things I noticed about your idea" the way `/init-project` does. The user already knows their idea.
+- **Resist scope creep.** If you find yourself wanting to add user stories, NFR docs, or stage gates — stop. That is not this skill.
+
+## Example invocations
+
+- `/lite-init` — fresh start, idea will come from the dialogue
+- `/lite-init "a CLI that summarizes my git activity for standups"` — pre-seeds Q1
+- `/lite-init` (when `BRIEF.md` already exists) — offers refine / regenerate / cancel
