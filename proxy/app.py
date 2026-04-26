@@ -1,3 +1,5 @@
+import base64
+import binascii
 import os
 import shutil
 import tempfile
@@ -9,6 +11,26 @@ from fastapi.responses import FileResponse
 from starlette.background import BackgroundTask
 from yt_dlp import YoutubeDL
 from yt_dlp.utils import DownloadError
+
+COOKIES_PATH = "/tmp/yt-cookies.txt"
+
+
+def _materialize_cookies() -> str | None:
+    raw = os.environ.get("YT_COOKIES_B64")
+    if not raw:
+        return None
+    try:
+        decoded = base64.b64decode(raw, validate=False)
+    except (binascii.Error, ValueError):
+        print("proxy: YT_COOKIES_B64 set but not valid base64 — ignoring", flush=True)
+        return None
+    with open(COOKIES_PATH, "wb") as f:
+        f.write(decoded)
+    print(f"proxy: cookie file materialized at {COOKIES_PATH} ({len(decoded)} bytes)", flush=True)
+    return COOKIES_PATH
+
+
+COOKIEFILE = _materialize_cookies()
 
 app = FastAPI(title="youtube-downloader proxy")
 
@@ -63,6 +85,8 @@ def download(url: str = Query(..., description="YouTube video URL")) -> FileResp
         "no_warnings": True,
         "noprogress": True,
     }
+    if COOKIEFILE:
+        opts["cookiefile"] = COOKIEFILE
     try:
         with YoutubeDL(opts) as ydl:
             info = ydl.extract_info(url, download=True)

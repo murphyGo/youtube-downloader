@@ -51,6 +51,23 @@ fly deploy
 
 After deploying, copy the `https://<app>.fly.dev` URL into `web/index.html`'s `PROXY_HOST` constant.
 
+### YouTube bot challenge (cookies)
+
+YouTube bot-challenges requests from cloud IP ranges, so a fresh Fly deploy will return `Sign in to confirm you're not a bot`. Workaround: pass cookies from a logged-in browser.
+
+1. Install a "cookies.txt" browser extension (e.g. *Get cookies.txt LOCALLY* for Chrome).
+2. Visit `https://www.youtube.com/` while logged in, export cookies for `youtube.com` as `cookies.txt` (Netscape format).
+3. Set the file as a Fly secret, base64-encoded so newlines survive the env-var hop:
+
+   ```sh
+   fly secrets set --app youtube-downloader-proxy \
+     YT_COOKIES_B64="$(base64 -i cookies.txt)"
+   ```
+
+4. Fly auto-restarts the machine. Confirm in logs: `proxy: cookie file materialized at /tmp/yt-cookies.txt (N bytes)`.
+
+Cookies expire — re-run step 3 when downloads start failing again.
+
 ## Web UI (GH Pages)
 
 Static, no build step. Run locally against the proxy:
