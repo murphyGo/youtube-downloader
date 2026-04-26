@@ -1,6 +1,6 @@
 # aidlc-lite
 
-A lightweight, solo-developer-first AIDLC starter. Three files, two skills. No approval gates, no audit logs, no per-stage paperwork.
+A lightweight, solo-developer-first AIDLC starter. Three files, three skills. No approval gates, no audit logs, no per-stage paperwork.
 
 ## Why this exists
 
