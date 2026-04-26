@@ -46,7 +46,7 @@
 ### Polish
 
 - [x] Friendly error states in UI (invalid URL, proxy 5xx, video unavailable)
-- [ ] CLI error messages for the obvious failure modes (network, age-gated, removed video)
+- [x] CLI error messages for the obvious failure modes (network, age-gated, removed video)
 - [ ] Update root `README.md` with deploy + usage steps for all three pieces
 - [ ] End-to-end manual smoke test using the two example URLs from BRIEF
 

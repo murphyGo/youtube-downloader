@@ -15,6 +15,10 @@ def _progress_hook(d: dict) -> None:
         sys.stderr.write("\n")
 
 
+def _clean(msg: str) -> str:
+    return msg[len("ERROR: "):] if msg.startswith("ERROR: ") else msg
+
+
 def main() -> None:
     if len(sys.argv) != 2:
         print("usage: ytdl <url>", file=sys.stderr)
@@ -35,7 +39,10 @@ def main() -> None:
             info = ydl.extract_info(url, download=True)
             filepath = ydl.prepare_filename(info)
     except DownloadError as e:
-        print(f"ytdl: download failed: {e}", file=sys.stderr)
+        print(f"ytdl: download failed: {_clean(str(e))}", file=sys.stderr)
         sys.exit(1)
+    except KeyboardInterrupt:
+        sys.stderr.write("\nytdl: interrupted\n")
+        sys.exit(130)
 
     print(os.path.abspath(filepath))
