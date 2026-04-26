@@ -33,7 +33,8 @@
 - [x] URL validation — only accept YouTube hosts; reject everything else with 400
 - [x] CORS headers allowing the GH Pages origin
 - [x] `Dockerfile` + `fly.toml` for Fly.io (Docker build + run verified locally)
-- [ ] Deploy proxy to Fly.io + curl smoke test against deployed URL (needs user-chosen app name + region; `fly launch --copy-config --no-deploy` to claim a name, then `fly deploy`)
+- [x] Deploy proxy to Fly.io + curl smoke test against deployed URL (`youtube-downloader-proxy.fly.dev` reachable; `/healthz` ok, validation ok)
+- [ ] Work around YouTube's bot challenge from Fly IPs (real downloads return "Sign in to confirm you're not a bot"). Likely fix: export YouTube cookies, store as a Fly secret, load via `cookiefile` in `proxy/app.py`. May also need a PO token for Shorts.
 
 ### Web UI
 

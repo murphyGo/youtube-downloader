@@ -1,19 +1,22 @@
-# Adjust app name + region before first deploy.
-# `fly launch --copy-config --no-deploy` will help pick a unique name.
-app = "youtube-downloader-proxy"
-primary_region = "nrt"
+# fly.toml app configuration file generated for youtube-downloader-proxy on 2026-04-27T03:49:34+09:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'youtube-downloader-proxy'
+primary_region = 'nrt'
 
 [build]
 
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = "stop"
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
-  processes = ["app"]
+  processes = ['app']
 
 [[vm]]
-  cpu_kind = "shared"
+  cpu_kind = 'shared'
   cpus = 1
   memory_mb = 512

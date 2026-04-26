@@ -30,6 +30,10 @@
 
 **Why**: GH Pages "Deploy from a branch" only supports root or `/docs`, never `/web`. Two ways to honor PLAN's `web/` directory: rename `web/` → `docs/` (loses semantic name, conflicts with future doc folder), or use a GH Actions workflow that uploads `web/`. Picked the workflow — keeps the directory layout clean and lets the UI evolve (build steps later) without another rename. Cost: requires the repo owner to flip Pages source to "GitHub Actions" once in Settings.
 
+## 2026-04-27: Deployed proxy hits YouTube bot challenge
+
+**Why**: First deploy of the Fly.io proxy at `youtube-downloader-proxy.fly.dev` is reachable and the routes work, but real `/download` calls return YouTube's "Sign in to confirm you're not a bot" error (HTTP 502 from our proxy, JSON detail surfaces the cause). This is YouTube blocking yt-dlp from non-residential IP ranges. Local CLI runs fine from a home IP. Workaround paths considered: pass cookies via `cookiefile` (need user to export from a logged-in browser, store as Fly secret, refresh on expiry), use a PO token, or switch to a residential proxy. Cookies are the simplest. Until that lands, the GH Pages → Fly path is non-functional for new requests, while the local CLI remains the working agent path.
+
 ---
 
 *New entries go below, newest at the bottom.*
