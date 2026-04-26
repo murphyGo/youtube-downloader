@@ -14,14 +14,46 @@ Generate `BRIEF.md`, `PLAN.md`, `DECISIONS.md`, and a project-specific `CLAUDE.m
 
 ### Step 1: Detect existing state
 
-Check the project root for `BRIEF.md`:
+Check the project root for two signals:
+- **BRIEF signal**: does `BRIEF.md` exist?
+- **Code signal**: do any source files or project manifests exist? Look for: `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `pom.xml`, `Gemfile`, `composer.json`, OR any `src/` / `lib/` / `app/` directory with source files (`.py`, `.ts`, `.tsx`, `.js`, `.go`, `.rs`, `.java`, `.rb`, `.php`).
 
-| State | Action |
-|-------|--------|
-| `BRIEF.md` does not exist | New project — proceed to Step 2 |
-| `BRIEF.md` exists | Refinement run — read it, ask: "Existing BRIEF.md found. Refine it (R), regenerate from scratch (X), or cancel (C)?" |
+| BRIEF | Code | Mode | Action |
+|-------|------|------|--------|
+| absent | absent | **Greenfield** | Proceed to Step 2 directly |
+| absent | present | **Brownfield** | Run Step 1a first, then Step 2 with extracted context |
+| present | any | **Refinement** | Read it, ask: "Existing BRIEF.md found. Refine it (R), regenerate from scratch (X), or cancel (C)?" |
 
-If R: Step 2 with the existing brief as context. If X: rename existing to `BRIEF.md.bak` and proceed fresh. If C: stop.
+For Refinement: R → Step 2 with the existing brief as context. X → rename existing to `BRIEF.md.bak`, proceed as Greenfield/Brownfield based on Code signal. C → stop.
+
+### Step 1a: Brownfield context extraction (only if Code signal present)
+
+Before asking the 5 questions, build a quick mental model from what's already there. Do NOT read every file — just enough to fill in obvious answers:
+
+1. **Tech stack** — read the manifest (`package.json` dependencies, `pyproject.toml` deps, `go.mod`, `Cargo.toml`). Identify language, framework, key libs.
+2. **Structure** — list top-level directories and their roles. One paragraph max.
+3. **Existing README** — read if it exists. It often answers Q1–Q3.
+4. **Test/build commands** — extract from `package.json` scripts, `Makefile`, `pyproject.toml` `[tool.*]` sections.
+
+Then in Step 2, **pre-fill** the questions with what you found and ask the user to confirm/correct rather than answer from scratch:
+
+```
+I see this is an existing project. Here's what I picked up — confirm or correct:
+
+1. **One-liner** — looks like: <inferred from README or structure>
+2. **Problem & user** — <inferred or "unclear from code, please describe">
+3. **MVP features** — what's done so far: <list>; what's still missing for v1?
+4. **Tech stack** — <detected>: confirm?
+5. **Out of scope + success** — anything you're explicitly NOT building, and what does "v1 ships" look like?
+
+Answer only what needs correction or filling in.
+```
+
+**Brownfield BRIEF rules** (override Step 4 generation rules):
+- BRIEF's "MVP features" section MUST distinguish **Done** vs **Remaining**
+- BRIEF's "Tech" section reflects what's **detected**, not aspirational
+- PLAN.md tasks should target the **Remaining** features, not redo what's done
+- DECISIONS.md gets one entry: "Adopted from existing codebase on {date}: <one-line summary of inherited tech choices>"
 
 ### Step 2: One-shot question block
 

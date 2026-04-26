@@ -29,7 +29,7 @@ Lightweight personal AIDLC starter. Three files (`BRIEF.md`, `PLAN.md`, `DECISIO
 
 ## When developing aidlc-lite itself
 
-- Skills must stay short. `/lite-init` ≤ 200 lines, `/lite-dev` ≤ 120 lines. If they grow, you're rebuilding full AIDLC.
+- Skills must stay short. `/lite-init` ≤ 200 lines, `/lite-dev` ≤ 140 lines. If they grow, you're rebuilding full AIDLC.
 - `/code-review` is the exception — it carries language/framework tables and protocols. Keep SKILL.md ≤ 400 lines; protocols are conditionally loaded so they don't burn context.
 - Templates must stay prose-friendly. No FR-001/NFR-001 numbering schemes. No fill-in-the-blank forms.
 - Resist adding stages. The whole value prop is "no stages."
