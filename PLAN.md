@@ -22,7 +22,7 @@
 
 ### CLI
 
-- [ ] Implement `ytdl <url>` that wraps `yt-dlp` and saves to cwd with the video title as filename
+- [x] Implement `ytdl <url>` that wraps `yt-dlp` and saves to cwd with the video title as filename
 - [ ] Verify it handles both `watch?v=...` and `/shorts/...` URLs (use the two URLs in BRIEF as smoke tests)
 - [ ] Print clear progress + final filepath; non-zero exit on failure (so agents can detect errors)
 
