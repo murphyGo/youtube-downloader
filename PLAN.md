@@ -28,7 +28,7 @@
 
 ### Proxy
 
-- [ ] Bare FastAPI app with `GET /download?url=<encoded>` endpoint
+- [x] Bare FastAPI app with `GET /download?url=<encoded>` endpoint
 - [ ] Endpoint streams the resolved video back with `Content-Disposition: attachment; filename=...` (no client-side YouTube fetch — sidesteps CORS + signature decryption)
 - [ ] URL validation — only accept YouTube hosts; reject everything else with 400
 - [ ] CORS headers allowing the GH Pages origin
