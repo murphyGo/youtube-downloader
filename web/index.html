@@ -93,13 +93,54 @@
 
       input.addEventListener("input", refresh);
 
-      document.getElementById("form").addEventListener("submit", (e) => {
+      function filenameFromDisposition(cd) {
+        if (!cd) return "video";
+        const utf = cd.match(/filename\*=utf-8''([^;]+)/i);
+        if (utf) {
+          try { return decodeURIComponent(utf[1]); } catch { /* fall through */ }
+        }
+        const plain = cd.match(/filename="([^"]+)"/i);
+        if (plain) return plain[1];
+        return "video";
+      }
+
+      document.getElementById("form").addEventListener("submit", async (e) => {
         e.preventDefault();
         const value = input.value.trim();
         if (!isYouTubeUrl(value)) return;
-        const target = `${PROXY_HOST}/download?url=${encodeURIComponent(value)}`;
-        status.textContent = "Downloading… your browser will prompt to save the file.";
-        window.location.href = target;
+
+        submit.disabled = true;
+        status.textContent = "Resolving and downloading… this may take a few seconds.";
+        let objUrl = null;
+
+        try {
+          const target = `${PROXY_HOST}/download?url=${encodeURIComponent(value)}`;
+          const resp = await fetch(target);
+          if (!resp.ok) {
+            let detail = `proxy returned HTTP ${resp.status}`;
+            try {
+              const body = await resp.json();
+              if (body && body.detail) detail = body.detail;
+            } catch { /* non-JSON body, keep status text */ }
+            status.textContent = `Failed: ${detail}`;
+            return;
+          }
+          const filename = filenameFromDisposition(resp.headers.get("content-disposition"));
+          const blob = await resp.blob();
+          objUrl = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = objUrl;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          status.textContent = `Saved: ${filename}`;
+        } catch (err) {
+          status.textContent = `Failed: ${err && err.message ? err.message : "network error — is the proxy reachable?"}`;
+        } finally {
+          if (objUrl) URL.revokeObjectURL(objUrl);
+          submit.disabled = !isYouTubeUrl(input.value.trim());
+        }
       });
 
       refresh();
