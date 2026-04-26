@@ -22,6 +22,10 @@
 
 **Why**: Hatchling is the modern PEP 517 default and needs zero `MANIFEST.in` / `setup.cfg` ceremony. The package source lives at `cli/ytdl/` (not `ytdl/` at repo root) so the PLAN's `cli/` / `proxy/` / `web/` triad stays clean — `cli/` holds CLI source, with `ytdl` as the importable package name preserved via `[tool.hatch.build.targets.wheel] packages = ["cli/ytdl"]`. This locks in: console entry resolves to `ytdl.main:main`, and any future CLI Python modules go under `cli/ytdl/`, not at repo root.
 
+## 2026-04-27: Single-file MP4 format (no ffmpeg merge)
+
+**Why**: `format="best[ext=mp4]/best"` picks the best single-file MP4 (currently itag 18, 360p) so the CLI works with no ffmpeg dependency. Higher resolutions on YouTube are split into separate video+audio streams that require ffmpeg merging, and yt-dlp's JS challenge solver (needed for the highest streams) wants a deno/node runtime — both extra deps we said we'd avoid in v1. Trade: lower default quality. Smoke test confirmed both `watch?v=...` and `/shorts/...` URLs download correctly with this setting. Revisit if quality complaints surface.
+
 ---
 
 *New entries go below, newest at the bottom.*
