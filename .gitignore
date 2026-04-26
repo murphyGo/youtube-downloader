@@ -3,7 +3,26 @@
 .vscode/
 *.log
 node_modules/
+
+# Python
 __pycache__/
 *.pyc
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+
+# Secrets
 .env
 .env.local
+.fly/
+fly.secrets
+
+# Downloaded media (this project produces video/audio in the working tree)
+/downloads/
+*.mp4
+*.webm
+*.mkv
+*.m4a
+*.mp3

@@ -18,7 +18,7 @@
 
 - [x] Initialize Python project (`pyproject.toml`) with `yt-dlp` dependency and console_scripts entry for `ytdl`
 - [x] Create `web/`, `proxy/`, and `cli/` directory layout with placeholders
-- [ ] Add `.gitignore` entries for downloads, `__pycache__/`, `.venv/`, fly secrets
+- [x] Add `.gitignore` entries for downloads, `__pycache__/`, `.venv/`, fly secrets
 
 ### CLI
 
