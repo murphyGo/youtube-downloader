@@ -30,7 +30,7 @@ If any of the three is missing, stop and tell the user to run `/lite-init` first
 | `$ARGUMENTS` | Behavior |
 |--------------|----------|
 | empty / `next` / `continue` | First unchecked `[ ]` item in `PLAN.md`, top to bottom |
-| `status` | Print "X of Y tasks done" + the next unchecked task, then stop |
+| `status` | Print "X of Y tasks done" + the next unchecked task, then stop. If `PLAN.md` is missing, the Step 1 check has already told the user to run `/lite-init` — don't proceed |
 | a string | Find the unchecked task whose text contains the string (case-insensitive). If multiple match, list them and ask which |
 
 If all tasks are checked, congratulate the user and suggest either `/lite-init` (to refine direction) or wrapping up.
@@ -117,6 +117,7 @@ Optionally run `/code-review git` for a deeper pass before committing.
 - **Trust BRIEF.md.** If the user said "no auth" in out-of-scope, don't add auth even if it would be nice.
 - **PLAN.md is mutable.** Splitting tasks, reordering, or adding tasks is fine — just keep it flat and short.
 - **Tests are a sanity check, never a hard gate.** Failing tests stop the box from being checked, but the user still owns the commit decision.
+- **Never auto-invoke `/code-review`.** It is a suggestion in Step 7 and nothing more — the user runs it when they want it.
 
 ## Example invocations
 

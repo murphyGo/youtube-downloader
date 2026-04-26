@@ -85,11 +85,43 @@ The commit is the approval gate. There is no other gate.
 ### `/code-review`
 Deep review for pending changes (defaults to `git diff`). Adapted from aidlc-starter:
 - Language patterns (Go / Python / TS-JS / Rust)
-- Framework patterns (FastAPI / Django / Flask / Express / NestJS / React / Next.js / Gin / Echo / etc.)
+- Framework patterns (FastAPI / Express / React / Next.js); other frameworks fall back to universal patterns
 - 7 deep-analysis protocols loaded **only when their signals appear** in the code: concurrency, data-integrity, error-contract, memory, performance, resource-lifecycle, security-boundary
 - Reads `BRIEF.md` and `DECISIONS.md` to avoid flagging out-of-scope features as "missing"
 
 Run it when you want — typically before a commit. It is **not** a gate inside `/lite-dev`.
+
+## What good looks like
+
+A finished `BRIEF.md` for a real personal project should fit on one screen. Example:
+
+```markdown
+# git-standup
+
+## What this is
+A CLI that turns my git activity into a usable standup paragraph.
+
+## The problem
+I forget what I did yesterday. `git log` gives raw commits; I want prose.
+
+## MVP
+- `git-standup` reads commits from the last 24h across pinned repos
+- Groups by repo, summarizes each in 1–2 sentences
+- Prints to stdout, copy-paste into Slack
+
+## Tech
+- **Language**: Python (have it installed, fast iteration)
+- **Data**: none — reads git directly
+- **Deploy**: local only
+
+## Out of scope
+- Multi-user, auth, web UI, scheduled posting
+
+## Done means
+I run `git-standup` at 9am and the output is good enough to paste unedited.
+```
+
+That's it. No FR-001 numbering, no NFR section, no personas. If yours grows past one screen, you're rebuilding full AIDLC.
 
 ## Design principles (and what we refuse to add)
 

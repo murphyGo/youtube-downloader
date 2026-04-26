@@ -24,7 +24,7 @@ Check the project root for two signals:
 | absent | present | **Brownfield** | Run Step 1a first, then Step 2 with extracted context |
 | present | any | **Refinement** | Read it, ask: "Existing BRIEF.md found. Refine it (R), regenerate from scratch (X), or cancel (C)?" |
 
-For Refinement: R → Step 2 with the existing brief as context. X → rename existing to `BRIEF.md.bak`, proceed as Greenfield/Brownfield based on Code signal. C → stop.
+For Refinement: R → Step 2 with the existing brief as context. X → rename existing root `BRIEF.md`, `PLAN.md`, and `DECISIONS.md` to `*.bak` (any of the three present), then proceed as Greenfield/Brownfield based on Code signal. C → stop.
 
 ### Step 1a: Brownfield context extraction (only if Code signal present)
 
@@ -90,11 +90,13 @@ If features are entirely missing AND can't be inferred, ask **one** follow-up: "
 
 Behavior depends on the mode picked in Step 1:
 
+Templates live at `.claude/skills/lite-init/templates/` (alongside this SKILL.md). They are never copied to the project root — only their filled-in output is.
+
 | Mode | Source | Output |
 |------|--------|--------|
-| First init (Greenfield or Brownfield) | Read `templates/BRIEF.md`, `templates/PLAN.md`, `templates/DECISIONS.md` | Write filled copies to project root |
-| Refinement (R) | Read existing root `BRIEF.md` / `PLAN.md` / `DECISIONS.md` | Edit them in place — do NOT touch `templates/` |
-| Refinement (X) | Step 1 already renamed existing files to `.bak`; treat as a first init | Read from `templates/` if still present; if `templates/` was already consumed, reuse the `.bak` files as a starting point and note this in `DECISIONS.md` |
+| First init (Greenfield or Brownfield) | Read `.claude/skills/lite-init/templates/BRIEF.md`, `…/PLAN.md`, `…/DECISIONS.md` | Write filled copies to project root |
+| Refinement (R) | Read existing root `BRIEF.md` / `PLAN.md` / `DECISIONS.md` | Edit them in place |
+| Refinement (X) | Step 1 already renamed existing root files to `*.bak`; treat as a first init | Read from `.claude/skills/lite-init/templates/`. The `.bak` files are kept on disk for the user to inspect/delete; do not read from them |
 
 **Generation rules:**
 - `BRIEF.md` — keep under 1 page (~50 lines). Prose with bullets. No FR-001 numbering. No NFR sections unless user mentioned perf/security explicitly.
@@ -137,6 +139,10 @@ Behavior depends on the mode picked in Step 1:
 - Commit is the approval gate. No other gates.
 - One PLAN.md task per commit when possible.
 - If a non-obvious choice is made during dev, append to `DECISIONS.md`.
+
+## When to graduate
+
+If this project grows past ~3k LOC, multiple developers, or real compliance/audit needs, copy `BRIEF.md` into an [aidlc-starter](https://github.com/murphyGo/aidlc-starter) `IDEA.md` and run `/init-project` there. aidlc-lite is intentionally one-way — no migration tool.
 ```
 
 ### Step 6: Replace template README
@@ -157,9 +163,9 @@ In development. See `PLAN.md` for progress.
 {Build/test/run commands once they exist, else "TBD"}
 ```
 
-### Step 7: Clean up template artifacts
+### Step 7: Skill housekeeping
 
-- Delete `templates/` if it exists (the templates have been consumed). On Refinement runs `templates/` is typically already absent — skip silently in that case.
+- Templates live at `.claude/skills/lite-init/templates/` and stay there — they're owned by the skill, not the project root. Nothing to delete.
 - Leave `.claude/skills/lite-init/`, `.claude/skills/lite-dev/`, and `.claude/skills/code-review/` in place — all three are part of the runtime toolkit.
 - **Do not** touch `.git/` — the user manages that themselves (per the README quick start, they typically `rm -rf .git && git init` before cloning).
 
@@ -170,10 +176,11 @@ Print a short summary:
 ```
 ✓ BRIEF.md, PLAN.md, DECISIONS.md generated
 ✓ CLAUDE.md and README.md replaced for this project
-✓ Templates consumed and removed
 
 Next: run /lite-dev to start on the first PLAN.md task.
 ```
+
+If Refinement (X) was used, append: `Note: previous BRIEF/PLAN/DECISIONS kept as *.bak — delete when satisfied.`
 
 **Do not** offer to commit. The user does that.
 

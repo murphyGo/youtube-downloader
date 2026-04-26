@@ -19,18 +19,18 @@ Lightweight personal AIDLC starter. Three files (`BRIEF.md`, `PLAN.md`, `DECISIO
 | File | Role |
 |------|------|
 | `README.md` | What aidlc-lite is, quick start, design principles |
-| `templates/BRIEF.md` | Template for the project's one-page brief |
-| `templates/PLAN.md` | Template for the project's flat checklist |
-| `templates/DECISIONS.md` | Template for the project's ADR log |
 | `.claude/skills/lite-init/SKILL.md` | Init skill definition |
+| `.claude/skills/lite-init/templates/BRIEF.md` | Template for the project's one-page brief |
+| `.claude/skills/lite-init/templates/PLAN.md` | Template for the project's flat checklist |
+| `.claude/skills/lite-init/templates/DECISIONS.md` | Template for the project's ADR log |
 | `.claude/skills/lite-dev/SKILL.md` | Dev driver skill definition |
 | `.claude/skills/code-review/SKILL.md` | Code review skill (trimmed from aidlc-starter) |
 | `.claude/skills/code-review/protocols/` | 7 deep-analysis protocols + INDEX (loaded on demand) |
 
 ## When developing aidlc-lite itself
 
-- Skills must stay short. `/lite-init` ≤ 200 lines, `/lite-dev` ≤ 140 lines. If they grow, you're rebuilding full AIDLC.
-- `/code-review` is the exception — it carries language/framework tables and protocols. Keep SKILL.md ≤ 400 lines; protocols are conditionally loaded so they don't burn context.
+- Skills must stay short. `/lite-init` ≤ 220 lines, `/lite-dev` ≤ 150 lines. If they grow, you're rebuilding full AIDLC.
+- `/code-review` is the exception — it carries language/framework tables and protocols. Keep SKILL.md ≤ 300 lines; protocols are conditionally loaded so they don't burn context.
 - Templates must stay prose-friendly. No FR-001/NFR-001 numbering schemes. No fill-in-the-blank forms.
 - Resist adding stages. The whole value prop is "no stages."
 - Resist adding `audit.md`, `aidlc-state.md`, refinement-log, cross-check. Git and checklists replace all of these.

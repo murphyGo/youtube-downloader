@@ -28,7 +28,7 @@ ruff check . && pytest
 go vet ./... && go test ./...
 ```
 
-If any automated check fails, stop and report. Don't continue to manual review until automated checks pass — those issues mask the manual signal.
+If any automated check fails, **report the failures at the top of the review and continue with the manual pass.** Lint/type errors don't block the deeper read — they're context. Surface them as issues in their own pre-review section so the user sees them alongside any manual findings.
 
 If no commands are configured, skip this step and note it in the report.
 
@@ -121,23 +121,6 @@ Detect the language(s) in the changed files and consult the relevant tables belo
 | No request body validation | Security risk | High |
 | Hardcoded CORS origins | Security misconfiguration | Medium |
 
-##### Django (Python)
-| Pattern | Issue | Severity |
-|---------|-------|----------|
-| Raw SQL without parameterization | SQL injection | Critical |
-| Missing CSRF protection | Security vulnerability | Critical |
-| N+1 query in loop | Performance issue | High |
-| `DEBUG=True` in production settings | Security risk | Critical |
-| `objects.get()` without try/except | Unhandled exception | Medium |
-
-##### Flask (Python)
-| Pattern | Issue | Severity |
-|---------|-------|----------|
-| `debug=True` in production | Security risk | Critical |
-| Missing input validation | Security vulnerability | High |
-| Global state mutation | Thread safety | High |
-| Secret key in code | Credential exposure | Critical |
-
 ##### Express (Node.js)
 | Pattern | Issue | Severity |
 |---------|-------|----------|
@@ -145,13 +128,6 @@ Detect the language(s) in the changed files and consult the relevant tables belo
 | Callback without error handling | Silent failure | High |
 | Missing body-parser limits | DoS via large payload | High |
 | No input sanitization | XSS / injection risk | Critical |
-
-##### NestJS (Node.js)
-| Pattern | Issue | Severity |
-|---------|-------|----------|
-| Missing DTO validation | Data integrity | High |
-| No guards on sensitive routes | Authorization bypass | Critical |
-| Missing exception filters | Poor error handling | Medium |
 
 ##### React (TypeScript / JavaScript)
 | Pattern | Issue | Severity |
@@ -169,16 +145,8 @@ Detect the language(s) in the changed files and consult the relevant tables belo
 | `getServerSideProps` doing heavy compute on every req | Performance issue | Medium |
 | Missing `loading.tsx` / suspense boundary | Poor UX | Low |
 
-##### Gin / Echo (Go)
-| Pattern | Issue | Severity |
-|---------|-------|----------|
-| `c.JSON()` without `return` | Handler continues | High |
-| Missing middleware for auth | Security bypass | Critical |
-| `c.Abort()` without `return` | Handler continues | High |
-| No panic recovery | Server crash | High |
-
-##### Spring Boot (Java) / Actix (Rust) / others
-For frameworks not listed above, apply universal patterns (input validation, authorization gates, error handling, resource cleanup) and consult the loaded protocols.
+##### Other frameworks (Django, Flask, NestJS, Gin/Echo, Spring, Actix, …)
+Apply universal patterns: input validation at the boundary, authorization gates on sensitive routes, structured error handling, resource cleanup, no secrets in code, no debug mode in production. Consult the loaded protocols (especially security-boundary) for the specific signals in the diff.
 
 ### Step 5: Test coverage check
 
@@ -194,82 +162,30 @@ If the project has no tests at all, note it once at the top of the report — do
 
 ### Step 6: Generate report
 
+Keep it short. One header line, optional pre-review block, optional protocols line, then issues grouped by severity. No summary tables.
+
 ```markdown
-## Code Review Report
+## Code Review — N files, <languages>, YYYY-MM-DD
 
-**Scope**: N files reviewed
-**Languages**: <detected>
-**Date**: YYYY-MM-DD HH:MM
+**Pre-review**: <"clean" | summary of lint/type/test failures with file:line, or "no commands configured">
 
----
+**Protocols applied**: <protocol names, or "none triggered">
 
-### Summary
+### 🔴 Critical / High
+- `src/auth.py:45` — hardcoded secret. Use environment variable.
+- `src/api.py:12` — missing input validation on user_id. Validate as int + range.
 
-| Category | ✅ Pass | ⚠️ Warn | 🔴 Fail |
-|----------|---------|---------|---------|
-| Correctness | X | Y | Z |
-| Safety | X | Y | Z |
-| Reliability | X | Y | Z |
-| Maintainability | X | Y | Z |
-| Test Coverage | X | Y | Z |
+### 🟡 Medium
+- `src/db.py:78` — bare `except:` catches too much. Catch specific exception.
 
-**Status**: ✅ All Clear / ⚠️ Warnings Found / 🔴 Issues Found
+### 🟢 Low
+- `src/utils.py:12` — magic number `86400`. Extract as `SECONDS_PER_DAY`.
 
----
-
-### Protocols Applied
-
-| Protocol | Triggered By | Key Findings |
-|----------|--------------|--------------|
-| <name> | <signal> | <findings or "No issues"> |
-
-_If none triggered: "No deep-analysis protocols triggered."_
-
----
-
-### Issues
-
-#### 🔴 Critical / High
-
-| # | File:Line | Category | Issue | Suggestion |
-|---|-----------|----------|-------|------------|
-| 1 | src/auth.py:45 | Security | Hardcoded secret | Use environment variable |
-
-#### 🟡 Medium
-
-| # | File:Line | Category | Issue | Suggestion |
-|---|-----------|----------|-------|------------|
-| 2 | src/db.py:78 | Error | Generic except | Catch specific exceptions |
-
-#### 🟢 Low
-
-| # | File:Line | Category | Issue | Suggestion |
-|---|-----------|----------|-------|------------|
-| 3 | src/utils.py:12 | Quality | Magic number | Extract constant |
-
----
-
-### Decisions to Log (optional)
-
-If the review produced a non-obvious decision worth recording (e.g., "deferred SQL injection fix because column is internal-only"), suggest one or two `DECISIONS.md` entries. Don't push the user to log routine fixes.
+### Decisions worth logging (optional)
+- (only if a non-obvious choice came out of the review, e.g., "deferred SQL injection fix on internal-only column"). Skip if nothing fits.
 ```
 
----
-
-## Ignore directives
-
-Code can be excluded from review with comments:
-
-```python
-# code-review:ignore-next-line
-password = os.getenv("PASSWORD")  # OK, reads from env
-
-# code-review:ignore-block-start
-# Legacy code, will be refactored
-def old_function():
-    pass
-# code-review:ignore-block-end
-```
+If no issues at any severity, the report is one line: `## Code Review — N files, <languages>, YYYY-MM-DD: clean`.
 
 ---
 
