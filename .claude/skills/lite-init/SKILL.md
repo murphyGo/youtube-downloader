@@ -83,6 +83,7 @@ Read the templates from `templates/BRIEF.md`, `templates/PLAN.md`, `templates/DE
 ## Skills
 
 - `/lite-dev` — picks the next unchecked `PLAN.md` item, implements it, checks it off
+- `/code-review` — review pending changes (defaults to `git diff`); reads `BRIEF.md` for project alignment
 - `/lite-init` — re-run to refine `BRIEF.md` if direction changes
 
 ## Tech

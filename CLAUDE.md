@@ -12,6 +12,7 @@ Lightweight personal AIDLC starter. Three files (`BRIEF.md`, `PLAN.md`, `DECISIO
 |-------|---------|
 | `/lite-init` | One-shot 5-question idea capture → generates BRIEF, PLAN, DECISIONS, project CLAUDE.md |
 | `/lite-dev` | Picks next unchecked PLAN.md item, implements, checks it off |
+| `/code-review` | Deep review of pending changes — language/framework patterns + 7 conditional protocols (concurrency, security, etc.) |
 
 ## Files
 
@@ -23,13 +24,17 @@ Lightweight personal AIDLC starter. Three files (`BRIEF.md`, `PLAN.md`, `DECISIO
 | `templates/DECISIONS.md` | Template for the project's ADR log |
 | `.claude/skills/lite-init/SKILL.md` | Init skill definition |
 | `.claude/skills/lite-dev/SKILL.md` | Dev driver skill definition |
+| `.claude/skills/code-review/SKILL.md` | Code review skill (trimmed from aidlc-starter) |
+| `.claude/skills/code-review/protocols/` | 7 deep-analysis protocols + INDEX (loaded on demand) |
 
 ## When developing aidlc-lite itself
 
-- Skills must stay short. `/lite-init` ≤ 200 lines, `/lite-dev` ≤ 120 lines. If a skill grows, you're rebuilding full AIDLC.
+- Skills must stay short. `/lite-init` ≤ 200 lines, `/lite-dev` ≤ 120 lines. If they grow, you're rebuilding full AIDLC.
+- `/code-review` is the exception — it carries language/framework tables and protocols. Keep SKILL.md ≤ 400 lines; protocols are conditionally loaded so they don't burn context.
 - Templates must stay prose-friendly. No FR-001/NFR-001 numbering schemes. No fill-in-the-blank forms.
 - Resist adding stages. The whole value prop is "no stages."
 - Resist adding `audit.md`, `aidlc-state.md`, refinement-log, cross-check. Git and checklists replace all of these.
+- `/code-review` must NEVER become a mandatory gate inside `/lite-dev`. It is a suggestion only — the commit is the gate.
 - If a feature is "useful for handoff to others" — it belongs in aidlc-starter, not here.
 
 ## Promotion path

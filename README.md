@@ -14,7 +14,8 @@ A lightweight, solo-developer-first AIDLC starter. Three files, two skills. No a
 | 1-page `BRIEF.md` | `audit.md` (git log replaces it) |
 | Flat `PLAN.md` checklist | Per-stage approval gates |
 | Append-only `DECISIONS.md` (ADR) | functional / NFR / infra design as separate stages |
-| `/lite-init`, `/lite-dev` | reverse-engineering, cross-check, refinement-log |
+| `/lite-init`, `/lite-dev`, `/code-review` | reverse-engineering, cross-check, refinement-log, TECH-DEBT.md |
+| 7 deep-analysis review protocols (concurrency, security, etc.) | session log integration, NFR docs |
 
 ## When to use this
 
@@ -64,12 +65,14 @@ my-project/
 ├── CLAUDE.md        # project context for Claude Code
 └── .claude/skills/
     ├── lite-init/   # re-runnable: refine the brief / replan
-    └── lite-dev/    # the dev driver
+    ├── lite-dev/    # the dev driver
+    └── code-review/ # deep review with conditional protocols
+        └── protocols/  # concurrency, security-boundary, ... (lazy-loaded)
 ```
 
 No `aidlc-docs/`, no `audit.md`, no `aidlc-state.md`. The three root files are the entire spec.
 
-## The two skills
+## The three skills
 
 ### `/lite-init`
 Five questions (one shot — answer what you can, skip the rest). Generates `BRIEF.md`, `PLAN.md`, `DECISIONS.md`, and a project-specific `CLAUDE.md`. Re-runnable: detects existing files and offers to refine.
@@ -78,6 +81,15 @@ Five questions (one shot — answer what you can, skip the rest). Generates `BRI
 Reads `PLAN.md`, picks the next unchecked task, reads `BRIEF.md` for context, implements it, checks the box, optionally appends a `DECISIONS.md` entry if a non-obvious choice was made. That's the loop.
 
 The commit is the approval gate. There is no other gate.
+
+### `/code-review`
+Deep review for pending changes (defaults to `git diff`). Adapted from aidlc-starter:
+- Language patterns (Go / Python / TS-JS / Rust)
+- Framework patterns (FastAPI / Django / Flask / Express / NestJS / React / Next.js / Gin / Echo / etc.)
+- 7 deep-analysis protocols loaded **only when their signals appear** in the code: concurrency, data-integrity, error-contract, memory, performance, resource-lifecycle, security-boundary
+- Reads `BRIEF.md` and `DECISIONS.md` to avoid flagging out-of-scope features as "missing"
+
+Run it when you want — typically before a commit. It is **not** a gate inside `/lite-dev`.
 
 ## Design principles (and what we refuse to add)
 

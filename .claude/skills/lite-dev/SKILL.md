@@ -79,10 +79,12 @@ Print a short summary:
 
 Next task: <next unchecked title, or "all tasks done">
 
-Run `git diff` to review, then commit.
+Run `git diff` to review.
+Optionally run `/code-review git` for a deeper pass before committing.
 ```
 
 **Do not** run `git add` or `git commit`. That's the user's gate.
+**Do not** auto-trigger `/code-review` — it's a suggestion, not a gate. The user runs it when they want it.
 
 ## Guidelines
 
