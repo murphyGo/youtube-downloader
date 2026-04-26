@@ -40,7 +40,8 @@
 - [x] Single `index.html` with URL input, download button, status text
 - [x] Client-side YouTube URL validation; enable button only when valid
 - [x] Button links to `<PROXY_HOST>/download?url=<encoded>` (browser handles the file save via `Content-Disposition`)
-- [ ] Configure GH Pages to serve `web/`
+- [x] Add GH Actions workflow that deploys `web/` to Pages
+- [ ] Enable GH Pages in repo Settings → Pages → Source: "GitHub Actions" (one-time, user-only — Settings UI access required)
 
 ### Polish
 

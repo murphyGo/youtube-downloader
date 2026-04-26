@@ -26,6 +26,10 @@
 
 **Why**: `format="best[ext=mp4]/best"` picks the best single-file MP4 (currently itag 18, 360p) so the CLI works with no ffmpeg dependency. Higher resolutions on YouTube are split into separate video+audio streams that require ffmpeg merging, and yt-dlp's JS challenge solver (needed for the highest streams) wants a deno/node runtime — both extra deps we said we'd avoid in v1. Trade: lower default quality. Smoke test confirmed both `watch?v=...` and `/shorts/...` URLs download correctly with this setting. Revisit if quality complaints surface.
 
+## 2026-04-27: GH Actions workflow over `/docs` rename for Pages
+
+**Why**: GH Pages "Deploy from a branch" only supports root or `/docs`, never `/web`. Two ways to honor PLAN's `web/` directory: rename `web/` → `docs/` (loses semantic name, conflicts with future doc folder), or use a GH Actions workflow that uploads `web/`. Picked the workflow — keeps the directory layout clean and lets the UI evolve (build steps later) without another rename. Cost: requires the repo owner to flip Pages source to "GitHub Actions" once in Settings.
+
 ---
 
 *New entries go below, newest at the bottom.*
