@@ -4,12 +4,26 @@ import tempfile
 from urllib.parse import urlparse
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from starlette.background import BackgroundTask
 from yt_dlp import YoutubeDL
 from yt_dlp.utils import DownloadError
 
 app = FastAPI(title="youtube-downloader proxy")
+
+ALLOWED_ORIGINS = [
+    "https://murphygo.github.io",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_methods=["GET"],
+    allow_headers=["*"],
+)
 
 ALLOWED_HOSTS = {
     "youtube.com",
