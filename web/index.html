@@ -44,8 +44,50 @@
 
     <form id="form">
       <input id="url" type="url" placeholder="https://www.youtube.com/watch?v=..." autocomplete="off" />
-      <button id="submit" type="submit">Download</button>
+      <button id="submit" type="submit" disabled>Download</button>
       <div class="status" id="status"></div>
     </form>
+
+    <script>
+      const ALLOWED_HOSTS = new Set([
+        "youtube.com",
+        "www.youtube.com",
+        "m.youtube.com",
+        "youtu.be",
+        "youtube-nocookie.com",
+        "www.youtube-nocookie.com",
+      ]);
+
+      function isYouTubeUrl(value) {
+        let u;
+        try {
+          u = new URL(value);
+        } catch {
+          return false;
+        }
+        if (u.protocol !== "http:" && u.protocol !== "https:") return false;
+        return ALLOWED_HOSTS.has(u.hostname.toLowerCase());
+      }
+
+      const input = document.getElementById("url");
+      const submit = document.getElementById("submit");
+      const status = document.getElementById("status");
+
+      function refresh() {
+        const value = input.value.trim();
+        const valid = value.length > 0 && isYouTubeUrl(value);
+        submit.disabled = !valid;
+        if (value.length === 0) {
+          status.textContent = "";
+        } else if (!valid) {
+          status.textContent = "Enter a YouTube video or Shorts URL.";
+        } else {
+          status.textContent = "";
+        }
+      }
+
+      input.addEventListener("input", refresh);
+      refresh();
+    </script>
   </body>
 </html>
