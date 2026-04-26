@@ -32,7 +32,8 @@
 - [x] Endpoint streams the resolved video back with `Content-Disposition: attachment; filename=...` (no client-side YouTube fetch — sidesteps CORS + signature decryption)
 - [x] URL validation — only accept YouTube hosts; reject everything else with 400
 - [x] CORS headers allowing the GH Pages origin
-- [ ] `Dockerfile` + `fly.toml` for Fly.io; deploy + curl smoke test
+- [x] `Dockerfile` + `fly.toml` for Fly.io (Docker build + run verified locally)
+- [ ] Deploy proxy to Fly.io + curl smoke test against deployed URL (needs user-chosen app name + region; `fly launch --copy-config --no-deploy` to claim a name, then `fly deploy`)
 
 ### Web UI
 
